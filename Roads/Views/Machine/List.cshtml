@@ -1,0 +1,231 @@
+﻿//Controller
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+
+namespace MTERoads.Controllers
+{
+    public class MachineController : Controller
+    {
+        // GET: Machine
+        public ActionResult Machines(string MachineCode, string MachineDescription, string LeaseRate, string Owner_Num)
+        {
+            Models.RoadsEntities1 owner = new Models.RoadsEntities1();
+            List<SelectListItem>
+    list = new List<SelectListItem>
+        ();
+        foreach (Models.tblOwner a in owner.tblOwners)
+        {
+        list.Add(new SelectListItem()
+        {
+        Text = a.Owner_Name,
+        Value = a.Owner_Num.ToString()
+        });
+        }
+
+        ViewBag.Owners = list;
+        return View();
+        }
+        [HttpPost]
+        public ActionResult Insert(Models.tblMach m)
+        {
+        Models.RoadsEntities1 obj = new Models.RoadsEntities1();
+        obj.tblMaches.Add(m);
+        obj.SaveChanges();
+        return RedirectToAction("Machines");
+        }
+        public ActionResult Machines2()
+        {
+        //var users = new List<Models.tblMach>
+            ();
+
+            using (Models.RoadsEntities1 dc = new Models.RoadsEntities1())
+            {
+            List<Models.tblMach>
+                users = dc.tblMaches.ToList();
+                return View(users);
+                }
+
+                }
+                public ActionResult Edit()
+                {
+                return RedirectToAction("Machines2");
+                }
+                }
+                }
+                //End Controller
+
+                //Machine Insert
+                @model MTERoads.Models.tblMach
+                @{
+                    Layout = "~/Views/Shared/_Layout.cshtml";
+                }
+
+                <!DOCTYPE html>
+
+                <html>
+                <head>
+                    <meta name="viewport" content="width=device-width" />
+                    <title>Machines</title>
+                    <style>
+                        #input {
+                            position: fixed;
+                            left: 10%;
+                            width: 80%;
+                        }
+
+                        #AddMachine {
+                            background-color: #006400;
+                            color: #ffffff;
+                        }
+                    </style>
+                </head>
+                <body>
+
+                    @using (Html.BeginForm("Insert", "Machine"))
+                    {
+                        <br />
+                        <fieldset id="input">
+                            <br />
+                            @Html.TextBoxFor(m => m.Mach_No, new { type = "text", placeholder = "Machine Code", required = "required" })
+                            @Html.TextBoxFor(m => m.Mach_Desc, new { type = "text", placeholder = "Machine Name", required = "required" })
+                            <input id="AddMachine" type="submit" value="Add New Machine" />
+                            <br /><br />
+                            @Html.TextBoxFor(m => m.Lease_Rate, new { type = "text", placeholder = "Lease Rate", required = "required" })
+                            @Html.DropDownListFor(m => m.Owner_Num, (IEnumerable<SelectListItem>)ViewBag.Owners, "--Select Owner--")
+                            <br />
+                        </fieldset>
+                    }
+                </body>
+            </html>
+            //End Machine Insert
+
+            //Machine Table
+            @model IEnumerable<MTERoads.Models.tblMach>
+
+            @{
+                Layout = null;
+            }
+
+            <!DOCTYPE html>
+
+            <html>
+            <head>
+                <meta name="viewport" content="width=device-width" />
+                <title>Machines2</title>
+                <style>
+                    .MachineGrid {
+                        width: 100%;
+                    }
+
+                    .GridRow {
+                        background-color: #f0f0f0;
+                    }
+
+                    .GridAltRow {
+                        background-color: #ffffff;
+                    }
+
+                    .GridHeader {
+                        background-color: #f0f0f0;
+                        color: #000000;
+                    }
+
+                    a[type="btnType"] {
+                        background-color: #006400;
+                        border: 1px solid #787878;
+                        cursor: pointer;
+                        font-size: 1.2em;
+                        font-weight: 600;
+                        padding: 7px;
+                        margin-right: 8px;
+                        width: auto;
+                        text-decoration: none;
+                    }
+
+                    .HeaderBar {
+                        background-color: #006400;
+                        width: 100%;
+                        height: 30px;
+                        align-content: center;
+                    }
+
+                    .RoadHeader {
+                        color: #ffffff;
+                        font-size: 20px;
+                    }
+                </style>
+                <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+                <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+                <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+                <script>
+        $(document).ready(function () {
+            $('.show').click(function () {
+                $('#dialog-form-edit').dialog('open');
+            });
+
+            $('#dialog-form-edit').dialog({
+                autoOpen: false,
+                modal: true,
+                height: 350,
+                width: 400,
+            });
+        });
+                </script>
+            </head>
+            <body>
+                <div class="HeaderBar">
+                    <h1 class="RoadHeader">&nbsp;&nbsp;Roads</h1>
+                </div>
+                <script type="text/javascript">
+        function show(No, Desc, Rate, Owner, Active) {
+            $('#edit-Mach_No').val(No);
+            $('#edit-Mach_Desc').val(Desc);
+            $('#edit-Lease_Rate').val(Rate);
+            $('#edit-Owner_Num').val(Owner);
+            if (Active == 'onclick') {
+                $('#edit-Active').attr("checked", "checked");
+            } else {
+                $('#edit-Active').attr("checked", null);
+            }
+            $('#dialog-form-edit').dialog('open');
+        }
+                </script>
+                @{
+                    WebGrid grid = new WebGrid(source: Model);
+                    @grid.GetHtml(tableStyle: "MachineGrid", headerStyle: "GridHeader", rowStyle: "GridRow", alternatingRowStyle: "GridAltRow", columns: new[] {
+    grid.Column("Mach_No", "Machine Number"),
+    grid.Column("Mach_Desc", "Machine Description"),
+    grid.Column("Lease_Rate", "Lease Rate"),
+    grid.Column("Owner_Num", "Owner Number"),
+    grid.Column(header: "Active", format: @<text><input name="Active"
+                                                        type="checkbox" value="@item.Active" checked=@(item.Active == true ? "Checked" : null) /></text>),
+    grid.Column("", format: @<text><button type="button" id="edit" onclick="show('@item.Mach_No', '@item.Mach_Desc', '@item.Lease_Rate', '@item.Owner_Num', '@item.Active')">Edit</button></text>) })
+                }
+                <div id="dialog-form-edit" title="Edit Book">
+                    <label id="lblMachNo">Machine Number: </label>
+                    <br />
+                    <input type="text" id="edit-Mach_No" disabled="disabled" name="Mach_No" />
+                    <br />
+                    <label id="lblMachDesc">Machine Name:</label>
+                    <br />
+                    <input type="text" id="edit-Mach_Desc" placeholder="Machine Description" />
+                    <br />
+                    <label id="lblLease_Rate">Lease Rate: </label>
+                    <br />
+                    <input type="text" id="edit-Lease_Rate" placeholder="Lease Rate" />
+                    <br />
+                    <label id="lblOwnerNum">Owner Number: </label>
+                    <br />
+                    <input type="text" id="edit-Owner_Num" placeholder="Owner Number" />
+                    <br />
+                    <label id="lblActive">Active</label>
+                    <input type="checkbox" id="edit-Active" />
+                    <br /><br />
+                    @Html.ActionLink("Save", "Edit", "Machine", new { Type = "btnType" })
+                </div>
+            </body>
+        </html>
+        //End Machine Table

@@ -1,0 +1,190 @@
+﻿@model Roads.Models.ViewModel
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    ViewBag.Title = "List of Machines";
+    WebGrid grid = new WebGrid(Model.listMach, canSort: false);
+}
+
+<script src="https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+
+<style type="text/css">
+    .webgrid-table {
+        font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+        font-size: 1.2em;
+        width: 100%;
+        display: table;
+        border-collapse: separate;
+        border: solid 1px #98BF21;
+        background-color: white;
+    }
+
+        .webgrid-table td, th {
+            border: 1px solid #98BF21;
+            padding: 3px 7px 2px;
+        }
+
+    .webgrid-header {
+        background-color: #A7C942;
+        color: #FFFFFF;
+        padding-bottom: 4px;
+        padding-top: 5px;
+        text-align: left;
+    }
+
+    .webgrid-footer {
+    }
+
+    .webgrid-row-style {
+        padding: 3px 7px 2px;
+    }
+
+    .webgrid-alternating-row {
+        background-color: #EAF2D3;
+        padding: 3px 7px 2px;
+    }
+</style>
+
+
+<script>
+    $(function(){
+        $("#dialog").dialog({
+            autoOpen: false,
+            modal: true,
+            title: "Edit",
+            show: {
+                effect: "explode",
+                duration: 1000
+            },
+            hide: {
+                effect: "explode",
+                duration: 1000
+            },
+            buttons: {
+                'OK': function () {
+                    var new_machine = $("#mach").val();
+                    var new_machine_desc = $("#desc").val();
+                    var new_rate = $("#r8").val();
+                    var old_owner_name = $("#oname").val();
+                    var new_active = $("#aktive").prop("checked");
+
+                    var machine = {
+                        "Mach_No" : new_machine,
+                        "Mach_Desc" : new_machine_desc,
+                        "Lease_Rate" : new_rate,
+                        "Owner_Name" : old_owner_name,
+                        "Active" : new_active
+                    };
+
+                    $.ajax({
+                        type: "POST",
+                        data: machine,
+                        url: "/Machine/Edit"
+                    });
+                    setTimeout (function(){
+                        location.reload();
+                    }, 100)
+                    $(this).dialog('close');
+                },
+                'Close': function () {
+                    $(this).dialog('close');
+                }
+            }
+        });
+    })
+    function ShowDialog(id) {
+        var row = $("#" + id).closest('tr');
+        $("#mach").val(row.children()[0].innerHTML);
+        $("#desc").val(row.children()[1].innerHTML);
+        $("#r8").val(row.children()[2].innerHTML);
+        $("#oname").val(row.children()[3].innerHTML);
+        if (row.children()[4].children[0].checked) {
+            $("#aktive").val(1);
+            $("#aktive").prop("checked", true);
+        }
+        else {
+            $("#aktive").val(0);
+            $("#aktive").prop("checked", false);
+        }
+        $("#dialog").dialog('open');
+    }
+</script>
+
+@using (Html.BeginForm("Insert", "Machine")) 
+{
+    @Html.AntiForgeryToken()
+        
+    <div class="form-horizontal">
+        @*<h4>tblMach</h4>*@
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.Mach_No, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Mach_No, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Mach_No, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    
+        <div class="form-group">
+            @Html.LabelFor(model => model.Mach_Desc, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Mach_Desc, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Mach_Desc, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    
+        <div class="form-group">
+            @Html.LabelFor(model => model.Lease_Rate, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Lease_Rate, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Lease_Rate, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    
+        <div class="form-group">
+            @Html.LabelFor(model => model.Owner_Num, "Owner_Name", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(m => m.Owner_Num, (IEnumerable<SelectListItem>)ViewBag.owners, htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Owner_Num, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @grid.GetHtml(
+    tableStyle: "webgrid-table",
+    headerStyle: "webgrid-header",
+    footerStyle: "webgrid-footer",
+    alternatingRowStyle: "webgrid-alternating-row",
+    rowStyle: "webgrid-row-style",
+    columns: grid.Columns(
+        grid.Column("Mach_No", "Mach_No"),
+        grid.Column("Mach_Desc", "Mach_Desc"),
+        grid.Column("Lease_Rate", "Lease_Rate"),
+        grid.Column("tblOwner.Owner_Name", "Owner_Name"),
+        grid.Column("Active", format:@<text><input type="checkbox" @(item.Active ? "checked='checked'" : "") disabled="disabled" /></text>),
+        grid.Column("Edit", "", @<text><input type="button" id="@item.Mach_No" onclick="ShowDialog(@item.Mach_No)" value="Edit" /></text>)
+        ))
+</div>
+
+<div id="dialog">
+    <input type="text" id="mach" disabled="disabled" />
+    <input type="text" id="desc" placeholder="Description" />
+    <input type="text" id="r8" placeholder="Rate" />
+    <input type="hidden" id="oname" />
+    <br />
+    <label>Active</label>
+    <input type="checkbox" id="aktive" />
+</div>

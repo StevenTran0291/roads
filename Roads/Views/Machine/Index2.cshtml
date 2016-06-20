@@ -1,0 +1,199 @@
+﻿@model Roads.Models.ViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var grid = new WebGrid(source: Model.listRoad, canSort: false);
+}
+
+<script src="https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+
+<style type="text/css">
+    .webgrid-table {
+        font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+        font-size: 1.2em;
+        width: 100%;
+        display: table;
+        border-collapse: separate;
+        border: solid 1px #98BF21;
+        background-color: white;
+    }
+
+        .webgrid-table td, th {
+            border: 1px solid #98BF21;
+            padding: 3px 7px 2px;
+        }
+
+    .webgrid-header {
+        background-color: #A7C942;
+        color: #FFFFFF;
+        padding-bottom: 4px;
+        padding-top: 5px;
+        text-align: left;
+    }
+
+    .webgrid-footer {
+    }
+
+    .webgrid-row-style {
+        padding: 3px 7px 2px;
+    }
+
+    .webgrid-alternating-row {
+        background-color: #EAF2D3;
+        padding: 3px 7px 2px;
+    }
+</style>
+
+
+    @*<img src="http://www.summitworks.com/assets/images/SummitLogoFontVector.jpg" />*@
+    @*insert*@
+    @using (Html.BeginForm("Index3", "Machine"))
+    {
+        @Html.AntiForgeryToken()
+        <div>
+            <hr />
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <table>
+                <tr>
+                    <td>
+                        @Html.TextBoxFor(model => model.BIA_No, "", new { @placeholder = "Road number" })
+                        @Html.ValidationMessageFor(model => model.BIA_No, "", new { @class = "text-danger" })
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.TextBoxFor(model => model.Road_Name, "", new { @placeholder = "Road name" })
+                        @Html.ValidationMessageFor(model => model.Road_Name, "", new { @class = "text-danger" })
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.TextBoxFor(model => model.Miles, "", new { @placeholder = "Miles" })
+                        @Html.ValidationMessageFor(model => model.Miles, "", new { @class = "text-danger" })
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.DropDownListFor(m => m.Type_Id, (IEnumerable<SelectListItem>)ViewBag.sel, "Select road type")
+                        @Html.ValidationMessageFor(model => model.Type_Id, "", new { @class = "text-danger" })
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <br />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="submit" value="Create" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+    }
+    <div>
+        @{
+            @grid.GetHtml(
+            tableStyle: "webgrid-table",
+            headerStyle: "webgrid-header",
+            footerStyle: "webgrid-footer",
+            alternatingRowStyle: "webgrid-alternating-row",
+            rowStyle: "webgrid-row-style",
+            columns: grid.Columns(
+                grid.Column("BIA_No", "Road code", @<id="code_@item.BIA_No" readonly value="@item.BIA_No">),
+                grid.Column("Road_Name", "Road name", @<input type="text" id="name_@item.BIA_No" readonly value="@item.Road_Name">),
+                grid.Column("Type_Id", "Road type", @<input type="text" id="type_@item.BIA_No" readonly value="@item.Type_Id">),
+                grid.Column("Miles", "Miles", @<input type="text" id="mile_@item.BIA_No" readonly value="@item.Miles">),
+                grid.Column("", "", @<text><input type="button" value="Edit" onclick="pup(@item.BIA_No)"> </text>)
+            )
+        )
+        }
+    </div>
+
+    @*<div id="dialog" title="EDIT">
+            <table>
+                <tr>
+                    <td>Code</td>
+                    <td>
+                        <input type="text" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>Name</td>
+                    <td>
+                        <input type="text" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>Miles</td>
+                    <td>
+                        <input type="text" />
+                    </td>
+                </tr>
+            </table>
+            <select>
+                <option>Type I</option>
+                <option>Type II</option>
+                <option>Type III</option>
+            </select>
+            <br />
+            <button>Save</button>
+        </div>*@
+
+    <div id="dialog">
+        @using (Html.BeginForm("Edit2", "Machine"))
+        {
+            @Html.AntiForgeryToken()
+            <div>
+                <hr />
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                @Html.TextBoxFor(model => model.BIA_No, "", new { @placeholder = "Road number", @id = "code" })
+                @Html.ValidationMessageFor(model => model.BIA_No, "", new { @class = "text-danger" })
+                <br />
+                @Html.TextBoxFor(model => model.Road_Name, "", new { @placeholder = "Road name", @id = "name" })
+                @Html.ValidationMessageFor(model => model.Road_Name, "", new { @class = "text-danger" })
+                <br />
+                @Html.DropDownListFor(m => m.Type_Id, (IEnumerable<SelectListItem>)ViewBag.sel, new { @id = "type" })
+                @Html.ValidationMessageFor(model => model.Type_Id, "", new { @class = "text-danger" })
+                <br />
+                @Html.TextBoxFor(model => model.Miles, "", new { @placeholder = "Miles", @id = "mile" })
+                @Html.ValidationMessageFor(model => model.Miles, "", new { @class = "text-danger" })
+                <br />
+                <input type="submit" value="Save" />
+            </div>
+        }
+    </div>
+    <script>
+        $("#dialog").dialog({
+            autoOpen: false,
+            modal: true,
+            title: "Edit",
+            show: {
+                effect: "explode",
+                duration: 1000
+            },
+            hide: {
+                effect: "explode",
+                duration: 1000
+            }
+        })
+        function pup(code) {
+            var id1 = "code_" + code;
+            var id2 = "name_" + code;
+            var id3 = "type_" + code;
+            var id4 = "mile_" + code;
+
+            var v1 = document.getElementById(id1).value;
+            var v2 = document.getElementById(id2).value;
+            var v3 = document.getElementById(id3).value;
+            var v4 = document.getElementById(id4).value;
+
+            document.getElementById("code").value = v1;
+            document.getElementById("name").value = v2;
+            document.getElementById("type").value = v3;
+            document.getElementById("mile").value = v4;
+
+            $("#dialog").dialog("open");
+        }
+    </script>

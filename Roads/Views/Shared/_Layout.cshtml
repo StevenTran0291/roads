@@ -1,0 +1,59 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - My ASP.NET Application</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    <style>
+        .footer{
+            position: fixed;
+            bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="container">
+            <div class="navbar-header">
+            <img src="http://www.summitworks.com/assets/images/SummitLogoFontVector.jpg" alt=""/>
+                <img src="" alt="" />
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li>@Html.ActionLink("Machines", "Index", "Machine")</li>
+                    <li>@Html.ActionLink("Roads", "Index2", "Machine")</li>
+                    <li>@Html.ActionLink("Transactions", "Contact", "Home")</li>
+                </ul>
+                <div style="float: right">
+                    <a href="@Url.Action("Index", "Roads")">
+                        <img src="@Url.Content("http://icons.iconarchive.com/icons/alecive/flatwoken/256/Apps-Dialog-Logout-icon.png")" style="height: 35px" />
+                    </a>
+                </div>
+                @*@Html.Partial("_LoginPartial")*@
+            </div>
+        </div>
+    </div>
+    <div class="container body-content">
+        @RenderBody()
+        <footer class="footer">
+            <hr />
+            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+        </footer>
+    </div>
+
+    
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>
+
+
+
