@@ -100,7 +100,7 @@
             alternatingRowStyle: "webgrid-alternating-row",
             rowStyle: "webgrid-row-style",
             columns: grid.Columns(
-                grid.Column("BIA_No", "Road code", @<id="code_@item.BIA_No" readonly value="@item.BIA_No">),
+                grid.Column("BIA_No", "Road code", @<input type="text" id="code_@item.BIA_No" readonly value="@item.BIA_No">),
                 grid.Column("Road_Name", "Road name", @<input type="text" id="name_@item.BIA_No" readonly value="@item.Road_Name">),
                 grid.Column("Type_Id", "Road type", @<input type="text" id="type_@item.BIA_No" readonly value="@item.Type_Id">),
                 grid.Column("Miles", "Miles", @<input type="text" id="mile_@item.BIA_No" readonly value="@item.Miles">),

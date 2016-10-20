@@ -1,0 +1,164 @@
+﻿
+<div id="grid"></div>
+<script>
+    $("#grid").kendoGrid({
+        height: 400,
+        columns: [
+            //{ field: "Trans_Date" },
+            { field: "Emp_No", editor: Emp_Drop },
+            { field: "Mach_No", editor: Mach_Drop},
+            { field: "BIA_No", editor: Road_Drop},
+            { field: "Activity_Code", editor: Act_Drop},
+            { field: "Hours"},
+            { field: "Lease_Chg"},
+            { command: [ "edit" ], width: 180 }
+        ],
+        dataSource: {
+            type: "aspnetmvc-ajax", 
+            transport: {
+                read: {
+                     url: "tblTransactions_Read"
+                }, 
+				update: { 
+					url: "tblTransactions_Update"
+				}
+			},
+            schema: {
+                data: "Data",
+                model: {
+                    id: "AutoNumber",
+					fields: {
+						AutoNumber: { type: "number"},
+						Trans_Date: { type: "date"},
+						Hours: { type: "number"},
+						Lease_Chg: { type: "number"}
+					}
+                }
+            }, 
+			serverPaging: true,
+			serverSorting: true,
+			serverSorting: true,
+        },
+        editable: "inline",
+        save: onSave,
+        saveChanges: onSaveChanges,
+        edit: onEdit,
+        scrollable: true
+    })
+
+    function onSave(e){
+        //Implement the event handler for save
+    }
+
+    function onSaveChanges(e){
+        //Implement the event handler for saveChanges
+    }
+
+    function onEdit(e){
+        //Implement the event handler for edit
+    }
+
+    function Emp_Drop(container, options) {
+        $('<input required data-text-field="Emp_Name" data-value-field="Emp_No" data-bind="value:' + options.field + '"/>')
+            .appendTo(container)
+            .kendoDropDownList({
+                dataTextField: "Emp_Name",
+                dataValueField: "Emp_No",
+                autoBind: true,
+                dataSource: {
+                    type: "aspnetmvc-ajax",
+                    transport: {
+                        read: "tblEmp_Read"
+                    },
+                    schema: {
+                        data: "Data",
+                        model: {
+                            id: "Emp_No",
+                            fields: {
+                                Emp_Name: { type: "text" },
+                                Emp_No: { type: "number" }
+                            }
+                        }
+                    }
+                }
+            });
+    }
+
+    function Mach_Drop(container, options) {
+        $('<input required data-text-field="Mach_Desc" data-value-field="Mach_No" data-bind="value:' + options.field + '"/>')
+            .appendTo(container)
+            .kendoDropDownList({
+                dataTextField: "Mach_Desc",
+                dataValueField: "Mach_No",
+                autoBind: true,
+                dataSource: {
+                    type: "aspnetmvc-ajax",
+                    transport: {
+                        read: "tblMach_Read"
+                    },
+                    schema: {
+                        data: "Data",
+                        model: {
+                            id: "Mach_No",
+                            fields: {
+                                Mach_Desc: { type: "text" },
+                                BIA_No: { type: "number" }
+                            }
+                        }
+                    }
+                }
+            });
+    }
+
+    function Road_Drop(container, options) {
+        $('<input required data-text-field="Road_Name" data-value-field="BIA_No" data-bind="value:' + options.field + '"/>')
+            .appendTo(container)
+            .kendoDropDownList({
+                dataTextField: "Road_Name",
+                dataValueField: "BIA_No",
+                autoBind: true,
+                dataSource: {
+                    type: "aspnetmvc-ajax",
+                    transport: {
+                        read: "tblRoad_Read"
+                    },
+                    schema: {
+                        data: "Data",
+                        model: {
+                            id: "BIA_No",
+                            fields: {
+                                Road_Name: { type: "text" },
+                                BIA_No: { type: "number" }
+                            }
+                        }
+                    }
+                }
+            });
+    }
+
+    function Act_Drop(container, options) {
+        $('<input required data-text-field="Activity_Desc" data-value-field="Activity_Code" data-bind="value:' + options.field + '"/>')
+            .appendTo(container)
+            .kendoDropDownList({
+                dataTextField: "Activity_Desc",
+                dataValueField: "Activity_Code",
+                autoBind: true,
+                dataSource: {
+                    type: "aspnetmvc-ajax",
+                    transport: {
+                        read: "tblAct_Read"
+                    },
+                    schema: {
+                        data: "Data",
+                        model: {
+                            id: "Emp_No",
+                            fields: {
+                                Activity_Desc: { type: "text" },
+                                Activity_Code: { type: "number" }
+                            }
+                        }
+                    }
+                }
+            });
+    }
+</script>

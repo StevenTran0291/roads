@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Web.Mvc;
 
 namespace Roads.Models
 {
     public class ViewModel
     {
-        public int Mach_No { get; set; }
+        public Nullable<int> Mach_No { get; set; }
         public string Mach_Desc { get; set; }
         public Nullable<double> Lease_Rate { get; set; }
         public Nullable<int> Owner_Num { get; set; }
